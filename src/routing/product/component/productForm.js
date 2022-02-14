@@ -1,112 +1,82 @@
-import axios from "axios";
+import { useFormik } from "formik";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router"
 import { createProduct, getProduct, updateProduct } from "./service/ProductService";
+import * as Yup from "yup"
 
 export const ProductForm =()=>{
     let params= useParams()
     console.log("param",params);
-    const [newData,setNewData]=useState({id:"",name:""})
     let navigate = useNavigate();
+    const reaedable = params.id?true:false;
     const [loading,setLoading]=useState(false)
 
-    //addForm
-    //bikin onchange di setiap inputan
-    //bikin submit ngehit axios method post, update nya put
-    //if param nya ada id brrti getdatabyId
     
     useEffect(()=>{
         //use effect mengandung komponen didmount dan didupdate
-        if (params.id !== undefined){
+        if (params.id){
         getDataById()
         }
     },[])
 
+    const formik = useFormik({
+        //initialValues sudah disediakan dr formik
+        initialValues:{
+            id:"",
+            name:""
+        },
+        validationSchema: Yup.object({
+            id : Yup.string().required("This field is requred"),
+            name : Yup.string().required("This field is ruquired").min(5, "Minimum 5 character")
+        }),
+
+        onSubmit:()=>{
+            if(params.id){
+              handleUpdate()  
+            }else{
+              handleSubmit()
+            }
+        }
+    })
+
     const getDataById= async()=>{
-        console.log("Loading....");
         const res = await getProduct(params.id)
         console.log("response get by id",res);
-        setNewData(res.data)
-        console.log("Stop....");
+        formik.values.id = res.data.id
+        formik.values.name=res.data.name
+        formik.setFieldValue()
     }
 
 
-    const handleOnChangeId=(e)=>{
-        setNewData({...newData,id:e.target.value})
-    }
 
-    const handleOnChangeName=(e)=>{
-         setNewData({...newData,name:e.target.value})
-         console.log("newdata",newData);
-    }
-
-    // const postData = async()=>{
-    //     try{
-    //         const res = await axios.post("http://localhost:3000/products",newData);
-    //         console.log("response post: ", res);
-    //         // setNewData(...newData,res.data)
-    //     }catch(error){
-    //         console.log("error",error);
-    //     }
-    // }
-
-    // const updateData = async()=>{
-    //     try{
-    //         const res = await axios.put("http://localhost:3000/products",newData);
-    //         console.log("response put: ", res);
-    //     }catch(error){
-    //         console.log("error",error);
-    //     }
-    // }
-
-    // const handleSubmit = async (e)=>{
-    //     setLoading(true)
-    //     await postData()
-    //     setLoading(false)
-    //     e.preventDefault()
-    //     navigate("/products")
-    // }
-
-    // const handleUpdate= async (e)=>{
-    //     setLoading(true)
-    //     await updateData()
-    //     setLoading(false)
-    //     e.preventDefault()
-    //     navigate("/products")
-    // }
-
-    const handleSubmit = async(event)=>{
+    const handleSubmit = async()=>{
         try{
             setLoading(true)
-            await createProduct(newData)
+            await createProduct(formik.values)
             setLoading(false)
             navigate("/products")
         }catch(error){
             console.error(error);
         }
-        event.preventDefault()
     }
 
-    const handleUpdate = async(event)=>{
+    const handleUpdate = async()=>{
         try{
             setLoading(true)
-            await updateProduct(newData)
+            await updateProduct(formik.values)
             setLoading(false)
             navigate("/products")
         }catch(error){
             console.error(error);
         }
-        event.preventDefault()
     }
 
-    console.log("new data", newData);
     return(
         
         <div>
-            {loading?<h1>Loading...</h1>:
-                        <form>
-                <div className="form-group">
+            {loading?<h1>Loading...</h1>:<div>
                     <h2>Product Form</h2>
+                    <form onSubmit={formik.handleSubmit}>
                         <div className="form-group row">
                         <label htmlFor="inputId" className="col-sm-2 col-form-label">Id</label>
                         <div className="col-sm-10">
@@ -115,8 +85,15 @@ export const ProductForm =()=>{
                         className="form-control" 
                         id="inputId" 
                         placeholder="Id"
-                        value={newData.id||''}
-                        onChange={handleOnChangeId}/>
+                        name="id"
+                        value={formik.values.id||''}
+                        onChange={formik.handleChange}
+                        readOnly={reaedable}
+                        onBlur={formik.handleBlur}
+                        />
+                        {formik.errors.id&&formik.touched.id?(
+                            <small className="text-danger">{formik.errors.id}</small>
+                        ):null}
                         </div>
                     </div>
                     <br></br>
@@ -128,21 +105,21 @@ export const ProductForm =()=>{
                         className="form-control" 
                         id="inputName" 
                         placeholder="Name"
-                        value={newData.name||''}
-                        onChange={handleOnChangeName}/>
+                        name="name"
+                        value={formik.values.name||''}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        />
+                        {formik.errors.name&&formik.touched.name?(
+                            <small className="text-danger">{formik.errors.name}</small>
+                        ):null}
                         </div>
                     </div>
                     <br></br>
-                    
-                    
-                    {params.id === undefined ? (
-                        <input className="btn btn-primary" type="submit" value="Submit" onClick={handleSubmit}/> 
-                    ) : (
-                        <input className="btn btn-secondary" type="submit" value="Update" onClick={handleUpdate}/> 
-                    )}
+                        <input className="btn btn-primary" type="submit" value="Submit"/> 
+                    </form>
                 </div>
-                </form>}
-
-        </div>
+                }
+            </div>
     )
 }
