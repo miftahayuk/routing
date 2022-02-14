@@ -1,21 +1,21 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { deleteProduct, getProducts } from "./service/ProductService";
 
 const ProductList = () => {
   const [list, setList] = useState([]);
   let navigate = useNavigate();
 
   useEffect(() => {
-    getProducts();
+    getProduct();
   }, []);
 
 
-
-  const getProducts = async () => {
+  const getProduct = async () => {
     try{
-    const response = await axios.get("http://localhost:3002/products");
-    console.log("response: ", response);
+    const response = await getProducts();
+    console.log("response get product: ", response);
     setList(response.data.products)
     }catch(error){
           console.log("errorgetProducts: ",error);
@@ -25,21 +25,21 @@ const ProductList = () => {
 
   const handleDelete = async(data)=>{
       try{
-          if(window.confirm(`Are you sure to delet ${data.name}?`)){
-             await axios.delete(`http://localhost:3000/products/${data.id}`)
-            await getProducts()}
+          if(window.confirm(`Are you sure to delete ${data.name}?`)){
+            await deleteProduct(data.id)
+            await getProduct()}
       }catch(error){
           console.log("error: ", error);
-      }
-     
-}
+      } 
+  }
   
+
   return (
     <>
       <div>
         
         <h2>Product List</h2>
-        <button type="button" className="btn btn-success">Add Product</button>
+        <button type="button" className="btn btn-success" onClick={()=>navigate("form")}>Add Product</button>
         <table className="table table-striped"> 
           <thead>
             <tr>
@@ -60,7 +60,6 @@ const ProductList = () => {
                       <button onClick={()=>navigate(`form/${product.id}`)}>Update</button>
                       <button onClick={()=>handleDelete(product)}>Delete</button>
                       </td>
-                  
                 </tr>
               );
             })}

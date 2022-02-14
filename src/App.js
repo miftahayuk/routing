@@ -1,12 +1,15 @@
 import './App.css';
 import { BrowserRouter as Router, Routes, Route, Link} from "react-router-dom";
-import Home from "./routing basic/home/home";
-import Customer from "./routing basic/customer/customer";
-import Product from "./routing basic/product/product";
-import { ProductForm } from './routing basic/product/component/productForm';
-import { Outlet } from 'react-router';
-import { PageNotFound } from './routing basic/pageNotFound';
-
+// import Home from "./routing/home/home";
+// import Customer from "./routing/customer/customer";
+// import Product from "./routing/product/product";
+// import { ProductForm } from './routing basic/product/component/productForm';
+// import { Outlet } from 'react-router';
+// import { PageNotFound } from './routing/pageNotFound';
+import { PageNotFound } from './routing/shared/pageNotFound';
+import Home from "./routing/home/home"
+import Customer from "./routing/customer/customer"
+import Product from "./routing/product/product"
 
 const App=()=>{
 
