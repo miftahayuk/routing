@@ -1,21 +1,22 @@
 import { useFormik } from "formik";
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router"
-import { createProduct, getProduct, updateProduct } from "./service/ProductService";
+import { useEffect} from "react";
 import * as Yup from "yup"
 
-export const ProductForm =()=>{
-    let params= useParams()
-    console.log("param",params);
-    let navigate = useNavigate();
-    const reaedable = params.id?true:false;
-    const [loading,setLoading]=useState(false)
+export const ProductForm =({bloc})=>{
 
+    const{
+        params,
+        reaedable,
+        getProductById,
+        handleSubmit,
+        handleUpdate,
+        loading
+    }=bloc()
     
     useEffect(()=>{
         //use effect mengandung komponen didmount dan didupdate
         if (params.id){
-        getDataById()
+        setFormProductWithData(formik.values)
         }
     },[])
 
@@ -32,43 +33,19 @@ export const ProductForm =()=>{
 
         onSubmit:()=>{
             if(params.id){
-              handleUpdate()  
+              handleUpdate(formik.values)  
             }else{
-              handleSubmit()
+              handleSubmit(formik.values)
             }
         }
     })
 
-    const getDataById= async()=>{
-        const res = await getProduct(params.id)
-        console.log("response get by id",res);
-        formik.values.id = res.data.id
-        formik.values.name=res.data.name
+    const setFormProductWithData=async()=>{
+        const res = await getProductById();
+        console.log("response data", res);
+        formik.values.id=res.data.id;
+        formik.values.name=res.data.name;
         formik.setFieldValue()
-    }
-
-
-
-    const handleSubmit = async()=>{
-        try{
-            setLoading(true)
-            await createProduct(formik.values)
-            setLoading(false)
-            navigate("/products")
-        }catch(error){
-            console.error(error);
-        }
-    }
-
-    const handleUpdate = async()=>{
-        try{
-            setLoading(true)
-            await updateProduct(formik.values)
-            setLoading(false)
-            navigate("/products")
-        }catch(error){
-            console.error(error);
-        }
     }
 
     return(

@@ -6,7 +6,7 @@ const Home=()=>{
   return(
     <>
     <h2>Home</h2>
-    <button onClick={()=>navigate("/customers/Miftah")}>CUSTOMERS</button>
+    <button onClick={()=>navigate("/customers/")}>CUSTOMERS</button>
     </>
   )
 }

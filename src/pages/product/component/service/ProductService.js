@@ -1,4 +1,4 @@
-import client from "../../../shared/http-client/Client"
+import client from "../../../../shared/http-client/Client"
 
 export const getProducts=async(params)=>{
     const response =  await client.get("/products", {params})

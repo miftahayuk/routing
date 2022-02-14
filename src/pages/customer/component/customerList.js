@@ -7,7 +7,7 @@ export const CustomerList=()=>{
     return(
         <>
         <h2>Customer name : {params.name}</h2>
-        <button onClick={()=>navigate("form")}>Add Product</button>
+        <button onClick={()=>navigate("form")}>Add Customer</button>
         </>
     )
 }

@@ -1,38 +1,16 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
-import { deleteProduct, getProducts } from "./service/ProductService";
+import { useEffect,} from "react";
 
-const ProductList = () => {
-  const [list, setList] = useState([]);
-  let navigate = useNavigate();
-
-  useEffect(() => {
-    getProduct();
-  }, []);
-
-
-  const getProduct = async () => {
-    try{
-    const response = await getProducts();
-    console.log("response get product: ", response);
-    setList(response.data.products)
-    }catch(error){
-          console.log("errorgetProducts: ",error);
-    }
-
-  };
-
-  const handleDelete = async(data)=>{
-      try{
-          if(window.confirm(`Are you sure to delete ${data.name}?`)){
-            await deleteProduct(data.id)
-            await getProduct()}
-      }catch(error){
-          console.log("error: ", error);
-      } 
-  }
+const ProductList = ({bloc}) => {
   
+    const{list,
+      getListProduct,
+      handleDelete,
+      navigate}=bloc()
+
+    useEffect(() => {
+      getListProduct();
+    }, []);
+
 
   return (
     <>
